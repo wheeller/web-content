@@ -1,8 +1,10 @@
 package hello.Controller;
 
+import hello.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ public class MainController {
     @Autowired
     private MessageRepo messageRepo;
 
+/*
     @GetMapping("/")
     public String root() {
         logger.info("Get into /");
@@ -32,13 +35,27 @@ public class MainController {
         logger.info("Get into /test");
         return "test";
     }
-
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
+
     @PostMapping("/login")
+    public String doLoginNoPassword(@RequestParam(name = "username") String username, Map<String, Object> model) {
+        if (username.isEmpty()) {
+            System.out.println("MainController: Empty parameters in login form");
+            System.out.println("MainController: login failed");
+            return "login";
+        }
+        model.put("username", username);
+        System.out.println("MainController: login success");
+        return "login";
+    }
+
+
+
+@PostMapping("/login")
     public String doLogin(@RequestParam(name = "username") String username, @RequestParam(name = "password") String password, Map<String, Object> model) {
         if (username.isEmpty() || password.isEmpty()) {
             System.out.println("MainController: Empty parameters in login form");
@@ -50,6 +67,8 @@ public class MainController {
         System.out.println("MainController: login success");
         return "login";
     }
+*/
+
 
 
     @GetMapping("/message")
@@ -60,8 +79,13 @@ public class MainController {
     }
 
     @PostMapping("add")
-    public String addMessage(@RequestParam(name = "text") String text, @RequestParam(name = "tag") String tag, Map<String, Object> model) {
-        if (text.isEmpty() || tag.isEmpty())
+    public String addMessage(
+//            @AuthenticationPrincipal User user,
+            @RequestParam(name = "text") String text,
+            @RequestParam(name = "tag") String tag,
+            Map<String, Object> model) {
+
+         if (text.isEmpty() || tag.isEmpty())
             System.out.println("Empty parameters in add form");
         else {
             Message message = new Message(text, tag);
