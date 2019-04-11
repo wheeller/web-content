@@ -1,17 +1,12 @@
 package hello.domain;
 
-//import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
-//public enum Role implements GrantedAuthority {
-//    USER;
-//
-//    @Override
-//    public String getAuthority() {
-//        return name();
-//    }
-//}
+public enum Role  implements GrantedAuthority {
+    ADMIN, USER;
 
-// debug
-public enum Role {
-    USER;
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 }

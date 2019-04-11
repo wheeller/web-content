@@ -50,7 +50,6 @@ public class Message{
         this.author = author;
     }
 
-
     public String getTag() {
         return tag;
     }
