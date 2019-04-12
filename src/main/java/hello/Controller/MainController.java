@@ -1,8 +1,10 @@
 package hello.Controller;
 
 import hello.domain.Message;
+import hello.domain.User;
 import hello.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +27,7 @@ public class MainController {
 
     @PostMapping("add")
     public String addMessage(
-//            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal User user,
             @RequestParam(name = "text") String text,
             @RequestParam(name = "tag") String tag,
             Map<String, Object> model) {
@@ -34,6 +36,7 @@ public class MainController {
             System.out.println("Empty parameters in add form");
         else {
             Message message = new Message(text, tag);
+            message.setAuthor(user.getUsername());
             messageRepo.save(message);
         }
         Iterable<Message> messages = messageRepo.findAll();
