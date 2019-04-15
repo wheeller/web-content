@@ -14,8 +14,10 @@ public class Message{
     @Column
     private String tag;
 
-    @Column
-    private String author;
+//    @Column
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User author;
 
     public String getText() {
         return text;
@@ -25,11 +27,11 @@ public class Message{
         this.text = text;
     }
 
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
@@ -44,10 +46,10 @@ public class Message{
         this.tag = tag;
     }
 
-    public Message(String text, String tag, String author) {
+    public Message(String text, String tag, User user) {
         this.text = text;
         this.tag = tag;
-        this.author = author;
+        this.author = user;
     }
 
     public String getTag() {
@@ -72,5 +74,9 @@ public class Message{
 
     public void setMessage(String message) {
         this.text = message;
+    }
+
+    public String getAuthorName (){
+        return author != null ? author.getUsername() : "<none>";
     }
 }

@@ -25,6 +25,12 @@ public class MainController {
         return "message";
     }
 
+    @GetMapping("add")
+    public String addRedirect(){ return "redirect:/message";}
+
+    @GetMapping("filter")
+    public String filterRedirect(){ return "redirect:/message";}
+
     @PostMapping("add")
     public String addMessage(
             @AuthenticationPrincipal User user,
@@ -35,8 +41,7 @@ public class MainController {
         if (text.isEmpty() || tag.isEmpty())
             System.out.println("Empty parameters in add form");
         else {
-            Message message = new Message(text, tag);
-            message.setAuthor(user.getUsername());
+            Message message = new Message(text, tag, user);
             messageRepo.save(message);
         }
         Iterable<Message> messages = messageRepo.findAll();
