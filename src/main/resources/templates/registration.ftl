@@ -4,9 +4,10 @@
 <@c.page>
 Registration new user
 
-<#if message??>
-<br>
-<b>${message}</b>
-</#if>
+<!--<#if message??>-->
+<!--<br>-->
+<!--<b>${message}</b>-->
+<!--</#if>-->
+<b>${message?ifExists}</b>
 <@l.login "/registration" />
 </@c.page>

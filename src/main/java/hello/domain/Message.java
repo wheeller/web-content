@@ -3,9 +3,9 @@ package hello.domain;
 import javax.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class
-public class Message{
+public class Message {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column
@@ -14,10 +14,12 @@ public class Message{
     @Column
     private String tag;
 
-//    @Column
-    @ManyToOne (fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User author;
+
+    @Column
+    private String filename;
 
     public String getText() {
         return text;
@@ -39,7 +41,8 @@ public class Message{
         this.id = id;
     }
 
-    public Message() {}
+    public Message() {
+    }
 
     public Message(String text, String tag) {
         this.text = text;
@@ -76,7 +79,17 @@ public class Message{
         this.text = message;
     }
 
-    public String getAuthorName (){
+    public String getAuthorName() {
         return author != null ? author.getUsername() : "<none>";
     }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+
 }
