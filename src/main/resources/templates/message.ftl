@@ -1,39 +1,63 @@
 <#import "parts/common.ftl" as c>
-<#import "parts/login.ftl" as l>
 
 <@c.page>
-<@l.logout />
-<div>
-    <form method="post" action="add" enctype="multipart/form-data">
-        <input name="text" type="text" placeholder="Введите сообщение">
-        <input name="tag" type="text" placeholder="Тэг">
-        <input type="file" name="file">
-        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-        <button type="submit">"Добавить"</button>
-    </form>
-</div>
 
-<div>
-    <form method="get" action="/message">
-        <input name="filter" tyte="text" value="${filter?ifExists  }">
-        <button type="submit">"Найти"</button>
-    </form>
-</div>
-
-<div>Список сообщений</div>
-<#list messages as message>
-<div>
-    <b>${message.id}</b>
-    <span>${message.text}</span>
-    <i>${message.tag}</i>
-    <strong>${message.authorName}</strong>
-    <div>
-        <#if message.filename??>
-            <img src="/img/${message.filename}">
-        </#if>
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <form method="get" action="/message" class="form-inline">
+            <input name="filter" tyte="text" value="${filter?ifExists}" placeholder="Search by tag" class="mr-3">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
     </div>
 </div>
-<#else>
-Сообщений нет
+
+<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Add new message
+</a>
+<div class="collapse" id="collapseExample">
+    <div class="form-group mt-3">
+        <form method="post" action="add" enctype="multipart/form-data">
+            <div class="form-group">
+                <input name="text" type="text" placeholder="Введите сообщение">
+            </div>
+
+            <div class="form-group">
+                <input name="tag" type="text" placeholder="Тэг">
+            </div>
+
+            <div class="custom-file mb-3">
+                <input type="file" name="file" id="customFile">
+                <label class="custom-file-label col-sm-3" for="customFile">Choose image</label>
+            </div>
+
+            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <h5>Список сообщений</h5>
+</div>
+
+<div class="card-columns">
+<#list messages as message>
+    <div class="card my-3" style="width: 18rem;">
+        <div class="card-header text-muted">
+            ${message.authorName}
+        </div>
+        <#if message.filename??>
+            <img src="/img/${message.filename}" class="card-img-top" alt="${message.filename}">
+        </#if>
+        <div class="card-body">
+            <p class="card-text">${message.text}</p>
+            <i class="card-title">${message.tag}</i>
+        </div>
+    </div>
 </#list>
+</div>
 </@c.page>

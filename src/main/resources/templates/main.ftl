@@ -1,9 +1,16 @@
 <#import "parts/common.ftl" as c>
+<#import "parts/login.ftl" as l>
 
 <@c.page>
-<div>Hello!</div>
-<span><a href="/message">Message</a></span>
-<br>
-<span><a href="/user">Get list of users</a></span>
+<div>
+    <#if user??>
+        <h5>Hello, ${user.username}!</h5>
+    <#else>
+        <h5>Hello, new commer!</h5>
+        <@l.login "/login" false />
+    </#if>
 
+This is learning project.
+
+</div>
 </@c.page>

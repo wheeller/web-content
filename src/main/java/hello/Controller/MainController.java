@@ -27,6 +27,16 @@ public class MainController {
     @Autowired
     private MessageRepo messageRepo;
 
+    @GetMapping("/")
+    public String main(
+            @AuthenticationPrincipal User user,
+            Model model) {
+
+        model.addAttribute("user", user);
+        return "main";
+    }
+
+
     @GetMapping("/message")
     public String message(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
 
@@ -48,22 +58,22 @@ public class MainController {
             @AuthenticationPrincipal User user,
             @RequestParam(name = "text") String text,
             @RequestParam(name = "tag") String tag,
-            @RequestParam(name="file") MultipartFile file,
+            @RequestParam(name = "file") MultipartFile file,
             Map<String, Object> model) throws IOException {
 
         if (text.isEmpty() || tag.isEmpty())
             System.out.println("Empty parameters in add form");
         else {
             Message message = new Message(text, tag, user);
-            if (file != null && ! file.getOriginalFilename().isEmpty()){
+            if (file != null && !file.getOriginalFilename().isEmpty()) {
                 File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()){
+                if (!uploadDir.exists()) {
                     uploadDir.mkdir();
                 }
 
                 String resultFileName = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
 
-                file.transferTo(new File(uploadPath + "/" +   resultFileName));
+                file.transferTo(new File(uploadPath + "/" + resultFileName));
                 message.setFilename(resultFileName);
             }
             messageRepo.save(message);
