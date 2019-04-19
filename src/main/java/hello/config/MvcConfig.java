@@ -16,8 +16,7 @@ public class MvcConfig implements WebMvcConfigurer {
     private String uploadPath;
 
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/login").setViewName("login");
-//        registry.addViewController("/").setViewName("main");
+//        registry.addViewController("/login").setViewName("main");
         registry.addViewController("/test").setViewName("test");
     }
 

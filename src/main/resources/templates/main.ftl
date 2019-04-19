@@ -2,12 +2,13 @@
 <#import "parts/login.ftl" as l>
 
 <@c.page>
+${message?ifExists}
 <div>
     <#if user??>
         <h5>Hello, ${user.username}!</h5>
     <#else>
         <h5>Hello, new commer!</h5>
-        <@l.login "/login" false />
+        <@l.login "/" false />
     </#if>
 
 This is learning project.

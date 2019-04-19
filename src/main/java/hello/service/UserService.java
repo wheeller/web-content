@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,6 +22,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MailSender mailSender;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,8 +44,24 @@ public class UserService implements UserDetailsService {
         }
         user.setActivity(true);
         user.setRoles(Collections.singleton(Role.USER));
+
+        user.setActivationCode(UUID.randomUUID().toString());
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
+
+        String message = String.format(
+                "Hello, %s!\n" +
+                        "Welcome to Web-Content learning project!\n" +
+                        "Please, visit http://localhost:8888/activate/%s",
+                user.getUsername(),
+                user.getActivationCode()
+        );
+
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            mailSender.send(user.getEmail(), "Activation code", message);
+        }
+
         return true;
     }
 
@@ -68,4 +88,16 @@ public class UserService implements UserDetailsService {
     }
 
 
+    public boolean activateUser(String code) {
+        User user = userRepo.findByActivationCode(code);
+
+        if(user == null){
+            return false;
+        }
+
+        user.setActivationCode(null);
+        userRepo.save(user);
+
+        return true;
+    }
 }
