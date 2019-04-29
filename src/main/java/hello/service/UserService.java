@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
         if (userFromDb != null) {
             return false;
         }
-        user.setActivity(true);
+        user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
 
         user.setActivationCode(UUID.randomUUID().toString());
@@ -50,19 +50,22 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
 
-        String message = String.format(
-                "Hello, %s!\n" +
-                        "Welcome to Web-Content learning project!\n" +
-                        "Please, visit http://localhost:8888/activate/%s",
-                user.getUsername(),
-                user.getActivationCode()
-        );
-
-        if (!StringUtils.isEmpty(user.getEmail())) {
-            mailSender.send(user.getEmail(), "Activation code", message);
-        }
+        sendMessage(user);
 
         return true;
+    }
+
+    private void sendMessage(User user) {
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(
+                    "Hello, %s!\n" +
+                            "Welcome to Web-Content learning project!\n" +
+                            "Please, visit http://localhost:8888/activate/%s",
+                    user.getUsername(),
+                    user.getActivationCode()
+            );
+            mailSender.send(user.getEmail(), "Activation code", message);
+        }
     }
 
 
@@ -91,7 +94,7 @@ public class UserService implements UserDetailsService {
     public boolean activateUser(String code) {
         User user = userRepo.findByActivationCode(code);
 
-        if(user == null){
+        if (user == null) {
             return false;
         }
 
@@ -99,5 +102,30 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
 
         return true;
+    }
+
+    public void updateProfile(User user, String password, String email) {
+
+        String userEmail = user.getEmail();
+
+        boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
+                (userEmail != null && !userEmail.equals(email));
+
+        if (isEmailChanged) {
+            user.setEmail(email);
+        }
+
+        if (!StringUtils.isEmpty(email)) {
+            String activationCode = UUID.randomUUID().toString();
+            user.setActivationCode(activationCode);
+        }
+        if (!StringUtils.isEmpty(password)) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        if(isEmailChanged) {
+            sendMessage(user);
+        }
+
+        userRepo.save(user);
     }
 }

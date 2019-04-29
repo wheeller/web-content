@@ -22,7 +22,7 @@ public class User implements UserDetails {
     private String password;
 
     @Column
-    private boolean activity;
+    private boolean active;
 
     @Column
     private String email;
@@ -64,19 +64,19 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isActivity();
+        return isActive();
     }
 
     public Set<Role> getRoles() {
         return roles;
     }
 
-    public boolean isActivity() {
-        return activity;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setActivity(boolean activity) {
-        this.activity = activity;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void setRoles(Set<Role> roles) {

@@ -2,7 +2,9 @@
 <#import "parts/login.ftl" as l>
 
 <@c.page>
-${message?ifExists}
+<#if message??>
+    ${message}
+</#if>
 <div>
     <#if user??>
         <h5>Hello, ${user.username}!</h5>
