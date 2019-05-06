@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
         user.setActivationCode(UUID.randomUUID().toString());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepo.save(user);
+        userRepo. save(user);
 
         sendMessage(user);
 

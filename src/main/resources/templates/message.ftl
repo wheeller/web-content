@@ -14,20 +14,31 @@
 <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Add new message
 </a>
-<div class="collapse" id="collapseExample">
+<div class="collapse <#if message??>show</#if>" id="collapseExample">
     <div class="form-group mt-3">
         <form method="post" action="add" enctype="multipart/form-data">
             <div class="form-group">
-                <input name="text" type="text" placeholder="Введите сообщение">
+                <input name="text" type="text" class="form-control ${(textError??)?string('is-invalid', '')}"
+                       value="<#if message??>${message.text}</#if>" placeholder="Введите сообщение">
+                <#if textError??>
+                <div class="invalid-feedback">
+                    ${textError}
+                </div>
+                </#if>
             </div>
 
             <div class="form-group">
-                <input name="tag" type="text" placeholder="Тэг">
+                <input name="tag" type="text" value="<#if message??>${message.tag}</#if>" placeholder="Тэг">
+                <#if tagError??>
+                <div class="invalid-feedback">
+                    ${tagError}
+                </div>
+            </#if>
             </div>
 
             <div class="custom-file mb-3">
-                <input type="file" name="file" id="customFile">
-                <label class="custom-file-label col-sm-3" for="customFile">Choose image</label>
+                <input type="file" class="custom-file-input" name="file" id="customFile">
+                <label class="custom-file-label col-sm-5" for="customFile">Choose image</label>
             </div>
 
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>

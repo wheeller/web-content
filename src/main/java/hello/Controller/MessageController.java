@@ -8,15 +8,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Controller
 public class MessageController {
@@ -46,15 +51,19 @@ public class MessageController {
     @PostMapping("add")
     public String addMessage(
             @AuthenticationPrincipal User user,
-            @RequestParam(name = "text") String text,
-            @RequestParam(name = "tag") String tag,
-            @RequestParam(name = "file") MultipartFile file,
-            Map<String, Object> model) throws IOException {
+            @Valid Message message,
+            BindingResult bindingResult,
+            Model model,
+            @RequestParam(name = "file") MultipartFile file
+    ) throws IOException {
 
-        if (text.isEmpty() || tag.isEmpty())
-            System.out.println("Empty parameters in add form");
-        else {
-            Message message = new Message(text, tag, user);
+        message.setAuthor(user);
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errorsMap);
+            model.addAttribute("message", message);
+        } else {
             if (file != null && !file.getOriginalFilename().isEmpty()) {
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) {
@@ -66,14 +75,16 @@ public class MessageController {
                 file.transferTo(new File(uploadPath + "/" + resultFileName));
                 message.setFilename(resultFileName);
             }
+            model.addAttribute("message", null);
             messageRepo.save(message);
         }
 
         Iterable<Message> messages = messageRepo.findAll();
-        model.put("messages", messages);
-        model.put("filter", "");
+        model.addAttribute("messages", messages);
+        model.addAttribute("filter", "");
         return "message";
     }
+
 
     @PostMapping("filter")
     public String filter(@RequestParam(name = "tag") String tag, Map<String, Object> model) {
