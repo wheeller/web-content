@@ -97,5 +97,4 @@ public class Message {
         this.filename = filename;
     }
 
-
 }

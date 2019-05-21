@@ -1,4 +1,4 @@
-package hello.Controller;
+package hello.controller;
 
 import hello.domain.Role;
 import hello.domain.User;
@@ -31,6 +31,14 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.values());
         return "userEdit";
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/delete/{user}")
+    public String userDelete(@PathVariable User user) {
+        // TODO if unable to delete
+        userService.deleteUser(user);
+        return "redirect:/user";
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

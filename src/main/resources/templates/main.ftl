@@ -2,9 +2,7 @@
 <#import "parts/login.ftl" as l>
 
 <@c.page>
-<!--<#if message??>-->
-    <!--${message}-->
-<!--</#if>-->
+<#if message??>${message}</#if>
 
 <#if Session?? && Session.SPRING_SECURITY_LAST_EXCEPTION??>
 <div class="alert alert-danger" role="alert">

@@ -1,4 +1,4 @@
-package hello.Controller;
+package hello.controller;
 
 import hello.domain.User;
 import hello.service.UserService;
@@ -15,6 +15,9 @@ import java.util.Map;
 
 @Controller
 public class RegistrationController {
+
+//    final Logger logger = LogManager.getLogger(this.getClass());
+
     @Autowired
     private UserService userService;
 
@@ -41,19 +44,22 @@ public class RegistrationController {
             model.addAttribute("message", "User exists!");
             return "registration";
         }
-        model.addAttribute("message", "User successfully added!");
-        return "main";
+        model.addAttribute("message", "User successfully added\nFollow instructions in email to activate");
+        return "redirect:/";
     }
 
     @GetMapping("/activate/{code}")
-    public String activate(Model model, @PathVariable String code) {
+    public String activate(
+            Model model,
+            @PathVariable String code) {
         boolean isActivated = userService.activateUser(code);
 
         if (isActivated) {
-            model.addAttribute("message", "Acivation succesed!");
+            model.addAttribute("message", "Acivation succesed! Please log in");
+
         } else {
-            model.addAttribute("message", "Acivation code not found.");
+            model.addAttribute("message", "Acivation code not found");
         }
-        return "main";
+        return "redirect:/";
     }
 }

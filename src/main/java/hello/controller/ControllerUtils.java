@@ -1,4 +1,4 @@
-package hello.Controller;
+package hello.controller;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

@@ -1,12 +1,12 @@
-//package hello.Controller;
+//package hello.controller;
 //
 //import hello.service.MailSender;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Controller;
+//import org.springframework.stereotype.controller;
 //import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.RequestMapping;
 //
-//@Controller
+//@controller
 //@RequestMapping("/test")
 //public class TestControler {
 //    @Autowired

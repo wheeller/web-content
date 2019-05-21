@@ -1,4 +1,4 @@
-//package hello.Controller;
+//package hello.controller;
 //
 //import org.springframework.security.authentication.BadCredentialsException;
 //import org.springframework.ui.Model;

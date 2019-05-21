@@ -2,7 +2,10 @@ package hello.service;
 
 import hello.domain.Role;
 import hello.domain.User;
+import hello.repos.MessageRepo;
 import hello.repos.UserRepo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,14 +14,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
 
+    static final Logger uLogger = LogManager.getLogger(UserService.class);
+
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private MessageRepo messageRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -31,6 +40,7 @@ public class UserService implements UserDetailsService {
         User user = userRepo.findByUsername(username);
 
         if (user == null) {
+            uLogger.warn("User not found by user name");
             throw new UsernameNotFoundException("User not found");
         }
         return user;
@@ -40,18 +50,38 @@ public class UserService implements UserDetailsService {
         User userFromDb = userRepo.findByUsername(user.getUsername());
 
         if (userFromDb != null) {
+            uLogger.debug("User found in DB!");
             return false;
         }
-        user.setActive(true);
+
+        user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
 
         user.setActivationCode(UUID.randomUUID().toString());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepo. save(user);
+        userRepo.save(user);
 
         sendMessage(user);
 
+        return true;
+    }
+
+    public boolean deleteUser(User user) {
+        User userFromDb = userRepo.findByUsername(user.getUsername());
+
+        if (userFromDb == null) {
+            uLogger.debug("User not found in DB!");
+            return false;
+        }
+
+        if (!messageRepo.findByAuthorId(user.getId()).isEmpty()){
+            messageRepo.deleteAll(messageRepo.findByAuthorId(user.getId()));
+            uLogger.debug(user.getUsername() + "'s messages deleted!");
+        }
+
+        userRepo.delete(user);
+        uLogger.debug("Delete user:" + user.getUsername());
         return true;
     }
 
@@ -64,6 +94,7 @@ public class UserService implements UserDetailsService {
                     user.getUsername(),
                     user.getActivationCode()
             );
+            uLogger.debug("send email: " + message);
             mailSender.send(user.getEmail(), "Activation code", message);
         }
     }
@@ -95,12 +126,15 @@ public class UserService implements UserDetailsService {
         User user = userRepo.findByActivationCode(code);
 
         if (user == null) {
+            uLogger.warn("User not found by activation code");
             return false;
         }
 
         user.setActivationCode(null);
+        user.setActive(true);
         userRepo.save(user);
 
+        uLogger.debug("User activated");
         return true;
     }
 
@@ -112,6 +146,7 @@ public class UserService implements UserDetailsService {
                 (userEmail != null && !userEmail.equals(email));
 
         if (isEmailChanged) {
+            uLogger.debug("User email set");
             user.setEmail(email);
         }
 
@@ -126,6 +161,9 @@ public class UserService implements UserDetailsService {
             sendMessage(user);
         }
 
+        uLogger.debug("User updated");
         userRepo.save(user);
     }
+
+
 }
