@@ -15,12 +15,14 @@ public class MainController {
     @GetMapping
     public String main(
             @AuthenticationPrincipal User user,
+            @RequestParam(required = false, defaultValue = "") String messageType,
             @RequestParam(required = false, defaultValue = "") String message,
             Model model) {
 
         model.addAttribute("user", user);
 
         if (!message.isEmpty()) {
+            model.addAttribute("messageType", messageType);
             model.addAttribute("message", message);
         }
         return "main";
